@@ -10,7 +10,7 @@ import {
   PersistenceInputRead,
   PersistenceInputDelete,
 } from 'flexiblepersistence';
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from '@prisma/client';
 export class PrismaDB implements PersistenceAdapter {
   private persistenceInfo: PersistenceInfo;
   private prisma;
@@ -55,17 +55,12 @@ export class PrismaDB implements PersistenceAdapter {
   }
 
   private persistencePromise(input, method, resolve, reject) {
-    // console.log(method);
-    const input1 = !method.includes('create')
-      ? method.includes('ById')
-        ? input.id
-        : input.selectedItem
-      : this.realInput(input);
-    const input2 = this.realInput(input);
-    // console.log(input1);
-    // console.log(input2);
-    this.persistenceInfo.journaly
-      .publish(input.scheme + 'DAO.' + method, input1, input2)
+    this.prisma[input.scheme]
+      [method]({
+        data: {
+          ...this.realInput(input),
+        },
+      })
       .then((output) => {
         const persistencePromise: PersistencePromise = {
           receivedItem: output,
@@ -141,11 +136,6 @@ export class PrismaDB implements PersistenceAdapter {
     return this.persistenceInfo;
   }
 
-  getPool(): Pool {
-    // TODO: remove
-    return this.pool;
-  }
-
   close(): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       this.end(resolve);
@@ -153,7 +143,7 @@ export class PrismaDB implements PersistenceAdapter {
   }
 
   private end(resolve): void {
-    this.pool.end(() => {
+    this.prisma.end(() => {
       resolve(true);
     });
   }

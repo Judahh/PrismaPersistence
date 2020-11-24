@@ -28,12 +28,13 @@
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
     "default-initializer": "latest",
-    "pg": "latest",
+    "@prisma/client": "2.11.0",
     "ts-mixer": "latest",
     "bignumber.js": "latest",
     "journaly": "latest"
   },
   "devDependencies": {
+    "@prisma/cli": "latest",
     "flexiblepersistence": "latest",
     "@types/jest": "latest",
     "@types/node": "latest",
