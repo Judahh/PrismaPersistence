@@ -28,7 +28,8 @@
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
     "default-initializer": "latest",
-    "@prisma/client": "2.11.0",
+    "@prisma/client": "latest",
+    "pg": "latest",
     "ts-mixer": "latest",
     "bignumber.js": "latest",
     "journaly": "latest"

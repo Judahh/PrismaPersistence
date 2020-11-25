@@ -55,13 +55,22 @@ export class PrismaDB implements PersistenceAdapter {
   }
 
   private persistencePromise(input, method, resolve, reject) {
-    this.prisma[input.scheme]
+    console.log(input);
+
+    this.prisma[ //.objects
+      // .create(
+      (input.scheme + 's').toLowerCase()
+    ]
       [method]({
-        data: {
-          ...this.realInput(input),
-        },
+        data:
+          method.includes('delete') || method.includes('find')
+            ? undefined
+            : this.realInput(input),
+        where: input.selectedItem,
       })
       .then((output) => {
+        console.log(output);
+
         const persistencePromise: PersistencePromise = {
           receivedItem: output,
           result: output,
@@ -104,32 +113,26 @@ export class PrismaDB implements PersistenceAdapter {
   create(input: PersistenceInputCreate): Promise<PersistencePromise> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
-      ? this.makePromise(input, 'createArray')
+      ? this.makePromise(input, 'createMany')
       : this.makePromise(input, 'create');
   }
   update(input: PersistenceInputUpdate): Promise<PersistencePromise> {
-    return input.id
-      ? this.makePromise(input, 'updateById')
-      : input.single
-      ? this.makePromise(input, 'update')
-      : this.makePromise(input, 'updateArray');
+    return input.single
+      ? this.makePromise(input, 'updateFirst')
+      : this.makePromise(input, 'updateMany');
   }
   read(input: PersistenceInputRead): Promise<PersistencePromise> {
     // console.log('read', input);
-    return input.id
-      ? this.makePromise(input, 'readById')
-      : input.single
-      ? this.makePromise(input, 'read')
-      : this.makePromise(input, 'readArray');
+    return input.single
+      ? this.makePromise(input, 'findFirst')
+      : this.makePromise(input, 'findMany');
   }
   delete(input: PersistenceInputDelete): Promise<PersistencePromise> {
     // console.log('FUCKING DELETE');
 
-    return input.id
-      ? this.makePromise(input, 'deleteById')
-      : input.single
-      ? this.makePromise(input, 'delete')
-      : this.makePromise(input, 'deleteArray');
+    return input.single
+      ? this.makePromise(input, 'deleteFirst')
+      : this.makePromise(input, 'deleteMany');
   }
 
   getPersistenceInfo(): PersistenceInfo {
