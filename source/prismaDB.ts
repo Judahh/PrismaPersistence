@@ -9,15 +9,21 @@ import {
   PersistenceInputUpdate,
   PersistenceInputRead,
   PersistenceInputDelete,
+  Default,
 } from 'flexiblepersistence';
 import { PrismaClient } from '@prisma/client';
 export class PrismaDB implements PersistenceAdapter {
+  element: { [name: string]: Default } = {};
   private persistenceInfo: PersistenceInfo;
   private prisma;
 
   constructor(persistenceInfo: PersistenceInfo) {
     this.persistenceInfo = persistenceInfo;
     this.prisma = new PrismaClient();
+  }
+
+  clear(): Promise<boolean> {
+    throw new Error('Method not implemented.');
   }
 
   private aggregateFromReceivedArray(receivedItem, realInput) {
@@ -55,14 +61,23 @@ export class PrismaDB implements PersistenceAdapter {
   }
 
   private persistencePromise(input, method, resolve, reject) {
-    this.prisma[input.scheme]
+    console.log(input);
+
+    this.prisma[ //.objects
+      // .create(
+      (input.scheme + 's').toLowerCase()
+    ]
       [method]({
-        data: {
-          ...this.realInput(input),
-        },
+        data:
+          method.includes('delete') || method.includes('find')
+            ? undefined
+            : this.realInput(input),
+        where: input.selectedItem,
       })
       .then((output) => {
-        const persistencePromise: PersistencePromise = {
+        console.log(output);
+
+        const persistencePromise: PersistencePromise<any> = {
           receivedItem: output,
           result: output,
           selectedItem: input.selectedItem,
@@ -76,13 +91,15 @@ export class PrismaDB implements PersistenceAdapter {
       });
   }
 
-  private makePromise(input, method): Promise<PersistencePromise> {
+  private makePromise(input, method): Promise<PersistencePromise<any>> {
     return new Promise((resolve, reject) => {
       this.persistencePromise(input, method, resolve, reject);
     });
   }
 
-  correct(input: PersistenceInputUpdate): Promise<PersistencePromise> {
+  correct(
+    input: PersistenceInputUpdate<any>
+  ): Promise<PersistencePromise<any>> {
     //! Envia o input para o service determinado pelo esquema e lá ele faz as
     //! operações necessárias usando o journaly para acessar outros DAOs ou
     //! DAOs.
@@ -93,43 +110,39 @@ export class PrismaDB implements PersistenceAdapter {
     return this.update(input);
   }
 
-  nonexistent(input: PersistenceInputDelete): Promise<PersistencePromise> {
+  nonexistent(input: PersistenceInputDelete): Promise<PersistencePromise<any>> {
     return this.delete(input);
   }
 
-  existent(input: PersistenceInputCreate): Promise<PersistencePromise> {
+  existent(
+    input: PersistenceInputCreate<any>
+  ): Promise<PersistencePromise<any>> {
     return this.create(input);
   }
 
-  create(input: PersistenceInputCreate): Promise<PersistencePromise> {
+  create(input: PersistenceInputCreate<any>): Promise<PersistencePromise<any>> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
-      ? this.makePromise(input, 'createArray')
+      ? this.makePromise(input, 'createMany')
       : this.makePromise(input, 'create');
   }
-  update(input: PersistenceInputUpdate): Promise<PersistencePromise> {
-    return input.id
-      ? this.makePromise(input, 'updateById')
-      : input.single
-      ? this.makePromise(input, 'update')
-      : this.makePromise(input, 'updateArray');
+  update(input: PersistenceInputUpdate<any>): Promise<PersistencePromise<any>> {
+    return input.single
+      ? this.makePromise(input, 'updateFirst')
+      : this.makePromise(input, 'updateMany');
   }
-  read(input: PersistenceInputRead): Promise<PersistencePromise> {
+  read(input: PersistenceInputRead): Promise<PersistencePromise<any>> {
     // console.log('read', input);
-    return input.id
-      ? this.makePromise(input, 'readById')
-      : input.single
-      ? this.makePromise(input, 'read')
-      : this.makePromise(input, 'readArray');
+    return input.single
+      ? this.makePromise(input, 'findFirst')
+      : this.makePromise(input, 'findMany');
   }
-  delete(input: PersistenceInputDelete): Promise<PersistencePromise> {
+  delete(input: PersistenceInputDelete): Promise<PersistencePromise<any>> {
     // console.log('FUCKING DELETE');
 
-    return input.id
-      ? this.makePromise(input, 'deleteById')
-      : input.single
-      ? this.makePromise(input, 'delete')
-      : this.makePromise(input, 'deleteArray');
+    return input.single
+      ? this.makePromise(input, 'deleteFirst')
+      : this.makePromise(input, 'deleteMany');
   }
 
   getPersistenceInfo(): PersistenceInfo {

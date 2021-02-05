@@ -6,32 +6,24 @@ import {
   MongoDB,
   PersistenceInfo,
 } from 'flexiblepersistence';
-import TestDAO from './testDAO';
-import ObjectDAO from './objectDAO';
 
-import { DAODB, Utils } from '../../source';
+import { PrismaDB, Utils } from '../../source';
 import { Journaly, SubjectObserver } from 'journaly';
 import { eventInfo, readInfo } from './databaseInfos';
+import { Pool } from 'pg';
 let read;
 let write;
+
 test('add and read array and find object', async (done) => {
   const journaly = Journaly.newJournaly() as SubjectObserver<any>;
   const eventDatabase = new MongoDB(new PersistenceInfo(eventInfo, journaly));
   const database = new PersistenceInfo(readInfo, journaly);
   write = eventDatabase;
-  read = new DAODB(database);
-  const pool = read.getPool();
+  read = new PrismaDB(database);
+  const pool = new Pool(database);
   await Utils.init(pool);
-  new TestDAO({
-    pool,
-    journaly,
-  });
-  new ObjectDAO({
-    pool,
-    journaly,
-  });
   const handler = new Handler(write, read);
-  await handler.getWrite().clear('events');
+  await handler.getWrite().clear();
   const obj = {};
   obj['test'] = 'test';
   try {
@@ -125,8 +117,16 @@ test('add and read array and find object', async (done) => {
     );
 
     expect(persistencePromise20).toStrictEqual({
-      receivedItem: true,
-      result: true,
+      receivedItem: {
+        id: persistencePromise2.receivedItem.id,
+        test: 'test',
+        testnumber: null,
+      },
+      result: {
+        id: persistencePromise2.receivedItem.id,
+        test: 'test',
+        testnumber: null,
+      },
       selectedItem: { id: persistencePromise2.receivedItem.id },
       sentItem: undefined,
     });
@@ -214,7 +214,7 @@ test('add and read array and find object', async (done) => {
     );
     // const persistencePromise7 = await handler.readArray('Object', {});
     // expect(persistencePromise7.result.rowCount).toBe(0);
-    await handler.getWrite().clear('events');
+    await handler.getWrite().clear();
     await write.close();
     await Utils.dropTables(pool);
     expect(error).toBe(null);
@@ -223,7 +223,7 @@ test('add and read array and find object', async (done) => {
   await handler.addEvent(
     new Event({ operation: Operation.delete, name: 'Object' })
   );
-  await handler.getWrite().clear('events');
+  await handler.getWrite().clear();
   await write.close();
   await Utils.dropTables(pool);
   done();
@@ -234,17 +234,9 @@ test('add array and read elements, update and delete object', async (done) => {
   const eventDatabase = new MongoDB(new PersistenceInfo(eventInfo, journaly));
   const database = new PersistenceInfo(readInfo, journaly);
   write = eventDatabase;
-  read = new DAODB(database);
-  const pool = read.getPool();
+  read = new PrismaDB(database);
+  const pool = new Pool(database);
   await Utils.init(pool);
-  new TestDAO({
-    pool,
-    journaly,
-  });
-  new ObjectDAO({
-    pool,
-    journaly,
-  });
   const handler = new Handler(write, read);
   const obj00 = {};
   obj00['test'] = 'test';
@@ -257,7 +249,7 @@ test('add array and read elements, update and delete object', async (done) => {
         operation: Operation.create,
         name: 'Object',
         single: false,
-        content: [obj00, obj01],
+        content: obj00,
       })
     );
 
@@ -265,16 +257,27 @@ test('add array and read elements, update and delete object', async (done) => {
 
     const obj0 = {
       ...obj00,
-      id: persistencePromise.receivedItem[0].id,
-      testnumber: null,
-    };
-    const obj1 = {
-      ...obj01,
-      id: persistencePromise.receivedItem[1].id,
+      id: persistencePromise.receivedItem.id,
       testnumber: null,
     };
 
-    expect(persistencePromise.receivedItem).toStrictEqual([obj0, obj1]);
+    const persistencePromise0 = await handler.addEvent(
+      new Event({
+        operation: Operation.create,
+        name: 'Object',
+        single: false,
+        content: obj01,
+      })
+    );
+
+    const obj1 = {
+      ...obj01,
+      id: persistencePromise0.receivedItem.id,
+      testnumber: null,
+    };
+
+    expect(persistencePromise.receivedItem).toStrictEqual(obj0);
+    expect(persistencePromise0.receivedItem).toStrictEqual(obj1);
 
     // console.log('TEST07');
     const persistencePromise1 = await handler.addEvent(
@@ -353,7 +356,7 @@ test('add array and read elements, update and delete object', async (done) => {
     );
     // const persistencePromise7 = await handler.readArray('Object', {});
     // expect(persistencePromise7.result.rowCount).toBe(0);
-    await handler.getWrite().clear('events');
+    await handler.getWrite().clear();
     await write.close();
     await Utils.end(pool);
     expect(error).toBe(null);
@@ -362,7 +365,7 @@ test('add array and read elements, update and delete object', async (done) => {
   await handler.addEvent(
     new Event({ operation: Operation.delete, name: 'Object' })
   );
-  await handler.getWrite().clear('events');
+  await handler.getWrite().clear();
   await write.close();
   await Utils.end(pool);
   done();

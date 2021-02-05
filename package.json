@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/prisma",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/source/index.js",
   "publishConfig": {
@@ -27,10 +27,8 @@
   },
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
-    "default-initializer": "latest",
-    "@prisma/client": "2.11.0",
-    "ts-mixer": "latest",
-    "bignumber.js": "latest",
+    "@prisma/client": "latest",
+    "pg": "latest",
     "journaly": "latest"
   },
   "devDependencies": {
