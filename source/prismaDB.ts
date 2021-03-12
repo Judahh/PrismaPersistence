@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   PersistenceAdapter,
@@ -9,9 +11,10 @@ import {
   PersistenceInputUpdate,
   PersistenceInputRead,
   PersistenceInputDelete,
-  Default,
+  PersistenceInput,
 } from 'flexiblepersistence';
 import { PrismaClient } from '@prisma/client';
+import { Default } from '@flexiblepersistence/default-initializer';
 export class PrismaDB implements PersistenceAdapter {
   element: { [name: string]: Default } = {};
   private persistenceInfo: PersistenceInfo;
@@ -20,6 +23,9 @@ export class PrismaDB implements PersistenceAdapter {
   constructor(persistenceInfo: PersistenceInfo) {
     this.persistenceInfo = persistenceInfo;
     this.prisma = new PrismaClient();
+  }
+  other(input: PersistenceInput<any>): Promise<PersistencePromise<any>> {
+    throw new Error('Method not implemented.');
   }
 
   clear(): Promise<boolean> {

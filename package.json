@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/prisma",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/source/index.js",
   "publishConfig": {
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@prisma/cli": "latest",
+    "@flexiblepersistence/default-initializer": "latest",
     "flexiblepersistence": "latest",
     "@types/jest": "latest",
     "@types/node": "latest",
