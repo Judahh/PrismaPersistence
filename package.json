@@ -29,7 +29,7 @@
   "dependencies": {
     "default-initializer": "latest",
     "@prisma/client": "2.11.0",
-    "ts-mixer": "latest",
+    "ts-mixer": "5.4.1",
     "bignumber.js": "latest",
     "journaly": "latest"
   },
