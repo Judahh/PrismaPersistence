@@ -4572,6 +4572,11 @@ ts-jest@latest:
     semver "7.x"
     yargs-parser "20.x"
 
+ts-mixer@5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/ts-mixer/-/ts-mixer-5.4.1.tgz#b90db9ced48531aa17ce9184a2890d1e3c99b1e5"
+  integrity sha512-Zo9HgPCtNouDgJ+LGtrzVOjSg8+7WGQktIKLwAfaNrlOK1mWGlz1ejsAF/YqUEqAGjUTeB5fEg8gH9Aui6w9xA==
+
 ts-mixer@latest:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/ts-mixer/-/ts-mixer-5.4.0.tgz#f98583e6acd72bf4c7a04481352ebfd203171297"
