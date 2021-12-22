@@ -1358,10 +1358,10 @@ deepmerge@^4.2.2:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
   integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
-default-initializer@latest:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/default-initializer/-/default-initializer-0.0.6.tgz#7c5345bc19ce3d0dcc38012f447910341da9e6ac"
-  integrity sha512-1iGoR7TIb1vELi728mrhWgvAlMSv8lybtG5/rdFC+ZW4CZXJJrRbxH/nlrvB8ijdfFuKN+Uda+ScnwEyaVm4DQ==
+default-initializer@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/default-initializer/-/default-initializer-0.1.1.tgz#2c0c913382f840b938951a8e424e524959d223a4"
+  integrity sha512-Byp9QFQrgLteBwiMj/8+DBtEaoAQLO34oNuAPwff8gwml7MOrUKpwofsYAjqY3c9gmbpd4KW4TFMLX3F/cKdNQ==
   dependencies:
     journaly latest
     ts-mixer latest
