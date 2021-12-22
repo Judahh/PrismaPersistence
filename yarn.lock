@@ -2886,6 +2886,11 @@ jest@latest:
     import-local "^3.0.2"
     jest-cli "^26.6.3"
 
+journaly@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/journaly/-/journaly-2.0.3.tgz#9c3a761b5d7bb99c70990547ea4d3c8e17b42bd0"
+  integrity sha512-+VJLkNigdtpH8CzP0gvtehQlhx1GI5/vtZ2Y2LyCJZpPR6R9nMdTEpw5sfZ1UdcD8GgCmVe8vFfvX1KQZL1STw==
+
 journaly@latest:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/journaly/-/journaly-2.0.0.tgz#1637c68385ba56cd85e6f2b2c15489a57ea4c473"
