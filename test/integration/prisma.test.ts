@@ -3,8 +3,8 @@ import {
   Handler,
   Operation,
   Event,
-  MongoDB,
   PersistenceInfo,
+  MongoPersistence,
 } from 'flexiblepersistence';
 
 import { PrismaDB, Utils } from '../../source';
@@ -16,21 +16,27 @@ let write;
 
 test('add and read array and find object', async () => {
   const journaly = Journaly.newJournaly() as SenderReceiver<any>;
-  const eventDatabase = new MongoDB(new PersistenceInfo(eventInfo, journaly));
+  const eventDatabase = new MongoPersistence(
+    new PersistenceInfo(eventInfo, journaly)
+  );
   const database = new PersistenceInfo(readInfo, journaly);
   write = eventDatabase;
   read = new PrismaDB(database);
   const pool = new Pool(database);
   await Utils.init(pool);
   const handler = new Handler(write, read);
-  await handler.getWrite().clear();
+  await handler?.getWrite()?.clear();
   const obj = {};
   obj['test'] = 'test';
   try {
     // console.log('TEST00');
-    const persistencePromise = await handler.addEvent(
+    const persistencePromise = (await handler.addEvent(
       new Event({ operation: Operation.create, name: 'Object', content: obj })
-    );
+    )) as {
+      receivedItem: { id };
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
     // console.log('TEST00:', persistencePromise);
 
@@ -45,17 +51,25 @@ test('add and read array and find object', async () => {
     // console.log('TEST02');
 
     // const persistencePromise1 = await handler.readArray('Object', {});
-    const persistencePromise1 = await handler.addEvent(
+    const persistencePromise1 = (await handler.addEvent(
       new Event({ operation: Operation.read, name: 'Object', single: false })
-    );
+    )) as {
+      receivedItem: { id };
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
     // console.log('TEST02', persistencePromise1);
     expect(persistencePromise1.receivedItem).toStrictEqual([obj0]);
     expect(persistencePromise1.selectedItem).toStrictEqual(undefined);
     expect(persistencePromise1.sentItem).toStrictEqual(undefined);
 
-    const persistencePromise10 = await handler.addEvent(
+    const persistencePromise10 = (await handler.addEvent(
       new Event({ operation: Operation.create, name: 'Object', content: obj })
-    );
+    )) as {
+      receivedItem: { id };
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
     // console.log('TEST02:', persistencePromise10);
     const obj1 = {
@@ -73,7 +87,11 @@ test('add and read array and find object', async () => {
       sentItem: undefined,
     };
 
-    const persistencePromise101 = await handler.readArray('Object', {});
+    const persistencePromise101 = (await handler.readArray('Object', {})) as {
+      receivedItem: { id }[];
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
     // console.log('TEST03:', persistencePromise101);
     expect(persistencePromise101).toStrictEqual(all2);
@@ -95,7 +113,11 @@ test('add and read array and find object', async () => {
 
     // console.log('TEST04');
 
-    const persistencePromise2 = await handler.readItem('Object', {});
+    const persistencePromise2 = (await handler.readItem('Object', {})) as {
+      receivedItem: { id };
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
     // console.log('TEST04:', persistencePromise2);
     expect(persistencePromise2.receivedItem).toStrictEqual({
@@ -108,13 +130,17 @@ test('add and read array and find object', async () => {
 
     // console.log('TEST033');
 
-    const persistencePromise20 = await handler.addEvent(
+    const persistencePromise20 = (await handler.addEvent(
       new Event({
         operation: Operation.delete,
         name: 'Object',
         selection: { id: persistencePromise2.receivedItem.id },
       })
-    );
+    )) as {
+      receivedItem: { id }[];
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
     expect(persistencePromise20).toStrictEqual({
       receivedItem: {
@@ -131,7 +157,11 @@ test('add and read array and find object', async () => {
       sentItem: undefined,
     });
 
-    const persistencePromise22 = await handler.readArray('Object', {});
+    const persistencePromise22 = (await handler.readArray('Object', {})) as {
+      receivedItem: { id }[];
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
     // console.log('TEST03:', persistencePromise22);
     expect(persistencePromise22.receivedItem).toStrictEqual([
@@ -145,17 +175,21 @@ test('add and read array and find object', async () => {
     expect(persistencePromise22.sentItem).toStrictEqual(undefined);
 
     // console.log('TEST04');
-    const persistencePromise3 = await handler.addEvent(
+    const persistencePromise3 = (await handler.addEvent(
       new Event({
         operation: Operation.update,
         name: 'Object',
         selection: { test: 'test' },
         content: { test: 'bob' },
       })
-    );
+    )) as {
+      receivedItem: { id }[];
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
     // console.log('TEST04:', persistencePromise3);
     expect(persistencePromise3.receivedItem).toStrictEqual({
-      id: persistencePromise22.receivedItem[0].id,
+      id: persistencePromise22?.receivedItem[0]?.id,
       test: 'bob',
       testnumber: null,
     });
@@ -185,12 +219,16 @@ test('add and read array and find object', async () => {
     expect(persistencePromise4.sentItem).toStrictEqual(undefined);
 
     // console.log('TEST06');
-    const persistencePromise5 = await handler.readArray('Object', {});
+    const persistencePromise5 = (await handler.readArray('Object', {})) as {
+      receivedItem: { id }[];
+      selectedItem: unknown;
+      sentItem: unknown;
+    };
 
-    expect(persistencePromise5.receivedItem.length).toBe(0);
-    expect(persistencePromise5.receivedItem).toStrictEqual([]);
-    expect(persistencePromise5.selectedItem).toStrictEqual({});
-    expect(persistencePromise5.sentItem).toStrictEqual(undefined);
+    expect(persistencePromise5?.receivedItem?.length).toBe(0);
+    expect(persistencePromise5?.receivedItem).toStrictEqual([]);
+    expect(persistencePromise5?.selectedItem).toStrictEqual({});
+    expect(persistencePromise5?.sentItem).toStrictEqual(undefined);
 
     // console.log('TEST07');
     const persistencePromise6 = await handler.addEvent(
@@ -214,7 +252,7 @@ test('add and read array and find object', async () => {
     );
     // const persistencePromise7 = await handler.readArray('Object', {});
     // expect(persistencePromise7.result.rowCount).toBe(0);
-    await handler.getWrite().clear();
+    await handler?.getWrite()?.clear();
     await write.close();
     await Utils.dropTables(pool);
     expect(error).toBe(null);
@@ -222,14 +260,16 @@ test('add and read array and find object', async () => {
   await handler.addEvent(
     new Event({ operation: Operation.delete, name: 'Object' })
   );
-  await handler.getWrite().clear();
+  await handler?.getWrite()?.clear();
   await write.close();
   await Utils.dropTables(pool);
 });
 
 test('add array and read elements, update and delete object', async () => {
   const journaly = Journaly.newJournaly() as SenderReceiver<any>;
-  const eventDatabase = new MongoDB(new PersistenceInfo(eventInfo, journaly));
+  const eventDatabase = new MongoPersistence(
+    new PersistenceInfo(eventInfo, journaly)
+  );
   const database = new PersistenceInfo(readInfo, journaly);
   write = eventDatabase;
   read = new PrismaDB(database);
@@ -242,35 +282,35 @@ test('add array and read elements, update and delete object', async () => {
   obj01['test'] = 'test2';
   try {
     // console.log('TEST00');
-    const persistencePromise = await handler.addEvent(
+    const persistencePromise = (await handler.addEvent(
       new Event({
         operation: Operation.create,
         name: 'Object',
         single: false,
         content: obj00,
       })
-    );
+    )) as { receivedItem: { id } };
 
     // console.log('TEST00:', persistencePromise);
 
     const obj0 = {
       ...obj00,
-      id: persistencePromise.receivedItem.id,
+      id: persistencePromise?.receivedItem?.id,
       testnumber: null,
     };
 
-    const persistencePromise0 = await handler.addEvent(
+    const persistencePromise0 = (await handler.addEvent(
       new Event({
         operation: Operation.create,
         name: 'Object',
         single: false,
         content: obj01,
       })
-    );
+    )) as { receivedItem: { id } };
 
     const obj1 = {
       ...obj01,
-      id: persistencePromise0.receivedItem.id,
+      id: persistencePromise0?.receivedItem?.id,
       testnumber: null,
     };
 
@@ -354,7 +394,7 @@ test('add array and read elements, update and delete object', async () => {
     );
     // const persistencePromise7 = await handler.readArray('Object', {});
     // expect(persistencePromise7.result.rowCount).toBe(0);
-    await handler.getWrite().clear();
+    await handler?.getWrite()?.clear();
     await write.close();
     await Utils.end(pool);
     expect(error).toBe(null);
@@ -362,7 +402,7 @@ test('add array and read elements, update and delete object', async () => {
   await handler.addEvent(
     new Event({ operation: Operation.delete, name: 'Object' })
   );
-  await handler.getWrite().clear();
+  await handler?.getWrite()?.clear();
   await write.close();
   await Utils.end(pool);
 });
