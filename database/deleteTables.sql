@@ -1,5 +1,3 @@
 DELETE FROM Tests;
 
 DELETE FROM Objects;
-
-DELETE FROM Object;

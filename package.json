@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/prisma",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/source/index.js",
   "publishConfig": {
@@ -21,20 +21,19 @@
     "url": "git+https://github.com/Judahh/flexiblePersistence.git"
   },
   "author": "Judah Holanda Correia Lima <judahholanda7@gmail.com> (https://judahh.com)",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Judahh/flexiblePersistence/issues"
   },
   "homepage": "https://github.com/Judahh/flexiblePersistence#readme",
   "dependencies": {
-    "default-initializer": "latest",
-    "@prisma/client": "2.11.0",
-    "ts-mixer": "latest",
-    "bignumber.js": "latest",
+    "@prisma/client": "latest",
+    "pg": "latest",
     "journaly": "latest"
   },
   "devDependencies": {
-    "@prisma/cli": "latest",
+    "prisma": "latest",
+    "@flexiblepersistence/default-initializer": "latest",
     "flexiblepersistence": "latest",
     "@types/jest": "latest",
     "@types/node": "latest",
