@@ -24,7 +24,7 @@ export class PrismaDB implements IPersistence {
     this.persistenceInfo = persistenceInfo;
     this.prisma = new PrismaClient();
   }
-  other(input: IInput<any>): Promise<IOutput<any, any>> {
+  other(input: IInput<any, any>): Promise<IOutput<any, any, any>> {
     throw new Error('Method not implemented.');
   }
 
@@ -83,7 +83,7 @@ export class PrismaDB implements IPersistence {
       .then((output) => {
         console.log(output);
 
-        const persistencePromise: IOutput<any, any> = {
+        const persistencePromise: IOutput<any, any, any> = {
           receivedItem: output,
           result: output,
           selectedItem: input.selectedItem,
@@ -97,13 +97,13 @@ export class PrismaDB implements IPersistence {
       });
   }
 
-  private makePromise(input, method): Promise<IOutput<any, any>> {
+  private makePromise(input, method): Promise<IOutput<any, any, any>> {
     return new Promise((resolve, reject) => {
       this.persistencePromise(input, method, resolve, reject);
     });
   }
 
-  correct(input: IInputUpdate<any>): Promise<IOutput<any, any>> {
+  correct(input: IInputUpdate<any>): Promise<IOutput<any, any, any>> {
     //! Envia o input para o service determinado pelo esquema e lá ele faz as
     //! operações necessárias usando o journaly para acessar outros DAOs ou
     //! DAOs.
@@ -114,32 +114,32 @@ export class PrismaDB implements IPersistence {
     return this.update(input);
   }
 
-  nonexistent(input: IInputDelete): Promise<IOutput<any, any>> {
+  nonexistent(input: IInputDelete): Promise<IOutput<any, any, any>> {
     return this.delete(input);
   }
 
-  existent(input: IInputCreate<any>): Promise<IOutput<any, any>> {
+  existent(input: IInputCreate<any>): Promise<IOutput<any, any, any>> {
     return this.create(input);
   }
 
-  create(input: IInputCreate<any>): Promise<IOutput<any, any>> {
+  create(input: IInputCreate<any>): Promise<IOutput<any, any, any>> {
     // console.log('CREATE:', input);
     return Array.isArray(input.item)
       ? this.makePromise(input, 'createMany')
       : this.makePromise(input, 'create');
   }
-  update(input: IInputUpdate<any>): Promise<IOutput<any, any>> {
+  update(input: IInputUpdate<any>): Promise<IOutput<any, any, any>> {
     return input.single
       ? this.makePromise(input, 'updateFirst')
       : this.makePromise(input, 'updateMany');
   }
-  read(input: IInputRead): Promise<IOutput<any, any>> {
+  read(input: IInputRead): Promise<IOutput<any, any, any>> {
     // console.log('read', input);
     return input.single
       ? this.makePromise(input, 'findFirst')
       : this.makePromise(input, 'findMany');
   }
-  delete(input: IInputDelete): Promise<IOutput<any, any>> {
+  delete(input: IInputDelete): Promise<IOutput<any, any, any>> {
     // console.log('FUCKING DELETE');
 
     return input.single
