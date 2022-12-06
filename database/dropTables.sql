@@ -1,3 +1,4 @@
 DROP TABLE IF EXISTS Tests;
 
 DROP TABLE IF EXISTS Objects;
+
