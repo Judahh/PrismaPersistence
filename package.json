@@ -1,6 +1,6 @@
 {
   "name": "@flexiblepersistence/prisma",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "dist/source/index.js",
   "publishConfig": {
@@ -21,7 +21,7 @@
     "url": "git+https://github.com/Judahh/flexiblePersistence.git"
   },
   "author": "Judah Holanda Correia Lima <judahholanda7@gmail.com> (https://judahh.com)",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Judahh/flexiblePersistence/issues"
   },
